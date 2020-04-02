@@ -1,7 +1,7 @@
 <template>
-  <view class="content">
+  <view class="content" :style="{'height':height,'overflow':'hidden'}">
     <!-- 搜索盒子 -->
-    <search></search>
+    <search @historyHeight="send"></search>
     <!-- 轮播 -->
     <swiper class="swiper" autoplay indicator-dots>
       <swiper-item>
@@ -117,16 +117,25 @@
 </template>
 
 <script>
-import search from '@/components/search';
+import search from "@/components/search";
 export default {
-  components:{
+  components: {
     search
   },
   data() {
-    return {};
+    return {
+      // 默认值：不需要设置高度
+      height: ""
+    };
   },
   onLoad() {},
-  methods: {}
+  methods: {
+    // 子组件搜索传来得值
+    send(e) {
+      // console.log(e);
+      this.height = e;
+    }
+  }
 };
 </script>
 
