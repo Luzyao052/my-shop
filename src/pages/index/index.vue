@@ -1,242 +1,206 @@
 <template>
-  <view class="content" :style="{'height':height,'overflow':'hidden'}">
-    <!-- 搜索盒子 -->
-    <search @historyHeight="send"></search>
-    <!-- 轮播 -->
-    <swiper class="swiper" autoplay indicator-dots>
-      <swiper-item>
-        <navigator url>
-          <image src="/static/uploads/banner1.png" />
-        </navigator>
-      </swiper-item>
-      <swiper-item>
-        <navigator url>
-          <image src="/static/uploads/banner2.png" />
-        </navigator>
-      </swiper-item>
-      <swiper-item>
-        <navigator url>
-          <image src="/static/uploads/banner3.png" />
+  <view :style="{height: pageHeight, overflow: 'hidden'}">
+    <search @search="disableScroll" />
+    <!-- 焦点图 -->
+    <swiper
+      class="banner"
+      indicator-dots
+      indicator-color="rgba(255, 255, 255, 0.6)"
+      indicator-active-color="#fff"
+      autoplay
+      circular
+    >
+      <swiper-item v-for="item in swiperList" :key="item.goods_id">
+        <navigator :url="item.navigator_url">
+          <image :src="item.image_src" />
         </navigator>
       </swiper-item>
     </swiper>
-    <!-- 导航区 -->
-    <view class="nav">
-      <navigator url>
-        <image src="/static/uploads/icon_index_nav_1@2x.png" />
-      </navigator>
-      <navigator url>
-        <image src="/static/uploads/icon_index_nav_2@2x.png" />
-      </navigator>
-      <navigator url>
-        <image src="/static/uploads/icon_index_nav_3@2x.png" />
-      </navigator>
-      <navigator url>
-        <image src="/static/uploads/icon_index_nav_4@2x.png" />
+    <!-- 导航条 -->
+    <view class="navs">
+      <navigator
+        v-for="item in navList"
+        :key="item.name"
+        open-type="switchTab"
+        :url="item.navigator_url"
+      >
+        <image :src="item.image_src" />
       </navigator>
     </view>
-    <!-- 楼层展示 -->
-    <view class="floors">
-      <!-- 第一层 -->
-      <view class="item first">
-        <!-- 标题 -->
+    <!-- 楼层 -->
+    <navigator class="floors">
+      <view class="floor" v-for="(item,index) in floorList" :key="index">
         <view class="title">
-          <image src="/static/uploads/pic_floor01_title.png" />
+          <image :src="item.floor_title.image_src" />
         </view>
-        <!-- 图片 -->
-        <view class="imgs">
-          <navigator>
-            <image src="/static/uploads/pic_floor01_1@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor01_2@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor01_3@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor01_4@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor01_5@2x.png" />
+        <view class="items">
+          <navigator
+            v-for="(floor,index) in item.product_list"
+            :key="index"
+            url="/pages/list/index"
+          >
+            <image :src="floor.image_src" />
           </navigator>
         </view>
       </view>
-      <!-- 公共楼层 -->
-      <view class="item">
-        <!-- 标题 -->
-        <view class="title">
-          <image src="/static/uploads/pic_floor02_title.png" />
-        </view>
-        <!-- 图片 -->
-        <view class="imgs">
-          <navigator>
-            <image src="/static/uploads/pic_floor02_1@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor02_2@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor02_3@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor02_4@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor02_5@2x.png" />
-          </navigator>
-        </view>
-      </view>
-      <!-- 三楼 -->
-      <view class="item">
-        <!-- 标题 -->
-        <view class="title">
-          <image src="/static/uploads/pic_floor03_title.png" />
-        </view>
-        <!-- 图片 -->
-        <view class="imgs">
-          <navigator>
-            <image src="/static/uploads/pic_floor03_1@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor03_2@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor03_3@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor03_4@2x.png" />
-          </navigator>
-          <navigator>
-            <image src="/static/uploads/pic_floor03_5@2x.png" />
-          </navigator>
-        </view>
-      </view>
-    </view>
+    </navigator>
+    <!-- 回到顶部 -->
+    <view class="goTop icon-top" @click="handleBack" v-if="scrollTopHeight>200"></view>
   </view>
 </template>
 
 <script>
+import { getSwiper, getNav, getFloor } from "@/api/home";
 import search from "@/components/search";
+
 export default {
+  data() {
+    return {
+      pageHeight: "auto",
+      swiperList: [], // 轮播图
+      navList: [], // 导航条
+      floorList: [], // 楼层
+      scrollTopHeight: 0
+    };
+  },
+
   components: {
     search
   },
-  data() {
-    return {
-      // 默认值：不需要设置高度
-      height: ""
-    };
-  },
-  onLoad() {},
+
   methods: {
-    // 子组件搜索传来得值
-    send(e) {
-      // console.log(e);
-      this.height = e;
+    disableScroll(ev) {
+      this.pageHeight = ev.pageHeight + "px";
+    },
+    // 获取轮播图
+    async getSwiperList() {
+      const res = await getSwiper();
+      // console.log(res);
+      this.swiperList = res.message;
+      // 这是注册全局的请求方法
+      // const res = await this.$request({url:"api/public/v1/home/swiperdata"});
+    },
+    // 获取导航条
+    async getNavList() {
+      const res = await getNav();
+      // console.log(res);
+      this.navList = res.message;
+    },
+    // 获取楼层
+    async getFloorList() {
+      const res = await getFloor();
+      // console.log(res);
+      this.floorList = res.message;
+    },
+    // 点击回到最顶部
+    handleBack() {
+      // 通过api设置scrollTop为零
+      uni.pageScrollTo({ scrollTop: 0 });
     }
+  },
+
+  onLoad() {
+    this.getSwiperList();
+    this.getNavList();
+    this.getFloorList();
+  },
+
+  // 监听下拉刷新
+  onPullDownRefresh() {
+    this.getSwiperList();
+    this.getNavList();
+    this.getFloorList();
+    // 停止下拉刷新
+    uni.stopPullDownRefresh();
+  },
+
+  // 监听页面滚动
+  onPageScroll(e) {
+    // console.log(e); // scrollTop
+    this.scrollTopHeight = e.scrollTop;
   }
 };
 </script>
 
-<style lang="less">
-.content {
-  // 搜索盒子
-  .search_box {
-    box-sizing: border-box;
-    padding: 20rpx 16rpx;
-    background-color: #ff2d4a;
-    // 输入框
-    input {
-      height: 60rpx;
-      line-height: 60rpx;
-      width: 100%;
-      background-color: #fff;
-      border-radius: 8rpx;
-    }
-  }
-  // 轮播图
-  .swiper {
+<style scoped lang="less">
+.banner {
+  width: 100%;
+  height: 340rpx;
+
+  image {
+    width: 100%;
     height: 340rpx;
-    image {
-      width: 750rpx;
-      height: 340rpx;
-    }
   }
-  // 导航区
-  .nav {
-    display: flex;
+}
+
+.navs {
+  display: flex;
+  justify-content: space-between;
+  padding: 30rpx 44rpx;
+
+  image {
+    width: 128rpx;
+    height: 140rpx;
+  }
+}
+
+.floor {
+  .title {
+    width: 750rpx;
+    height: 60rpx;
+    padding: 20rpx 0 0 8rpx;
+    background-color: #f4f4f4;
+  }
+
+  .items {
+    padding: 20rpx 16rpx;
+    overflow: hidden;
+
     navigator {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      image {
-        margin: 30rpx 0;
-        width: 128rpx;
-        height: 140rpx;
-      }
+      width: 193rpx;
+      height: 188rpx;
+      margin-left: 10rpx;
+      margin-bottom: 10rpx;
+      float: left;
+    }
+
+    navigator:first-child {
+      width: 232rpx;
+      height: 386rpx;
+      margin-left: 0rpx;
+    }
+
+    navigator:nth-child(2),
+    navigator:nth-child(5) {
+      width: 273rpx;
     }
   }
-  // 楼层区
-  // 公共楼层
-  .floors {
-    .item {
-      .title {
-        box-sizing: border-box;
-        padding: 20rpx 0 0 16rpx;
-        image {
-          width: 100%;
-          height: 60rpx;
-        }
-      }
-      .imgs {
-        box-sizing: border-box;
-        padding: 20rpx 12rpx;
-        overflow: hidden;
-        navigator {
-          float: left;
-          margin-right: 10rpx;
-          image {
-            width: 100%;
-            height: 100%;
-          }
-        }
-        navigator:nth-child(1) {
-          width: 232rpx;
-          height: 386rpx;
-        }
-        navigator:nth-child(2),
-        navigator:nth-child(5) {
-          width: 273rpx;
-          height: 188rpx;
-        }
-        navigator:nth-child(3),
-        navigator:nth-child(4) {
-          width: 203rpx;
-          height: 188rpx;
-        }
-        navigator:nth-child(3),
-        navigator:nth-child(5) {
-          margin-right: 0;
-        }
-        navigator:nth-child(2),
-        navigator:nth-child(4) {
-          margin-bottom: 10rpx;
-        }
-      }
-    }
-    // 第一层
-    .first {
-      .imgs {
-        // 2 3 4 5 n:从0开始，注意：n放在前面；如果放在没有效果，不会报错！
-        navigator:nth-child(n + 2) {
-          width: 236rpx;
-          height: 188rpx;
-        }
+
+  &:first-child {
+    .items {
+      navigator {
+        width: 233rpx;
       }
     }
   }
 }
+
+.goTop {
+  position: fixed;
+  bottom: 30rpx;
+  /* #ifdef H5 */
+  bottom: 65px;
+  /* #endif */
+  right: 30rpx;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100rpx;
+  height: 100rpx;
+  font-size: 48rpx;
+  color: #666;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+}
 </style>
-	
