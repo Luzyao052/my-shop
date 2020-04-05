@@ -11,7 +11,7 @@
       circular
     >
       <swiper-item v-for="item in swiperList" :key="item.goods_id">
-        <navigator :url="item.navigator_url">
+        <navigator :url="'/pages/goods/index?id=' + item.goods_id">
           <image :src="item.image_src" />
         </navigator>
       </swiper-item>

@@ -61,7 +61,7 @@ export default {
     },
     // 根据下标切换一级导航
     handleIdx(index) {
-      this.currentIdx = index
+      this.currentIdx = index;
     }
   },
   onLoad() {
