@@ -1,7 +1,8 @@
 export const createAPI = async (url, method, data) => {
   // 友好：1.showLoading()
   uni.showLoading({
-    title: "数据加载中..."
+    title: "数据加载中...",
+    // mask:true
   });
   const baseURL = `https://api-ugo-web.itheima.net/`
   const [err, res] = await uni.request({

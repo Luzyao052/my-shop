@@ -96,6 +96,15 @@ export default {
     handleBack() {
       // 通过api设置scrollTop为零
       uni.pageScrollTo({ scrollTop: 0 });
+    },
+    // 页面分享：只有index页面可以分享
+    onShareAppMessage() {
+      return {
+        title: "欢迎来到UGO商城!",
+        imageUrl:
+          "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1586077512893&di=2a750cc21951698fa5571b0c1ebfae75&imgtype=0&src=http%3A%2F%2Fu.ebrun.com%2Fstorage%2Fphotos%2F202002%2F27%2F1582807007108066.png",
+        path: "/pages/index/index"
+      };
     }
   },
 
