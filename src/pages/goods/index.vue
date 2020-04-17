@@ -53,8 +53,9 @@ export default {
         goods_id: this.list.goods_id,
         goods_name: this.list.goods_name,
         goods_small_logo: this.list.goods_small_logo,
-        goods_numb: 1,
-        goods_price: this.list.goods_price
+        goods_number: 1,
+        goods_price: this.list.goods_price,
+        goods_ck: true
       };
       // 判断是否已经存在
       // console.log(this.carts);
@@ -67,7 +68,7 @@ export default {
       }
       // 否则数量加一
       else {
-        this.carts[index].goods_numb++;
+        this.carts[index].goods_number++;
       }
       // 页面中carts数据已经改变了
       uni.setStorageSync("carts", this.carts);

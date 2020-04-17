@@ -1,6 +1,8 @@
 <template>
   <view :style="{height: pageHeight, overflow: 'hidden'}">
     <search @search="disableScroll" />
+
+    <!-- <van-button type="info">11</van-button> -->
     <!-- 焦点图 -->
     <swiper
       class="banner"
@@ -22,7 +24,7 @@
         v-for="item in navList"
         :key="item.name"
         open-type="switchTab"
-        :url="item.navigator_url"
+        url="/pages/category/index"
       >
         <image :src="item.image_src" />
       </navigator>
@@ -37,7 +39,7 @@
           <navigator
             v-for="(floor,index) in item.product_list"
             :key="index"
-            url="/pages/list/index"
+            :url="'/pages/list/index?id=' + floor.name"
           >
             <image :src="floor.image_src" />
           </navigator>

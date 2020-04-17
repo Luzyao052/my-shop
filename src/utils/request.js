@@ -8,7 +8,9 @@ export const createAPI = async (url, method, data) => {
   const [err, res] = await uni.request({
     url: baseURL + url,
     method,
-    data
+    data,
+    // 没有token模拟创建订单 
+    header:{ 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjIyLCJpYXQiOjE1ODYyNTAyOTUsImV4cCI6MTAwMTU4NjI1MDI5NH0.xpK-y1FU0GvGz7UyAeoWiANFfWoSr1ZkEwfSqMS415g' }
   })
   // 2.拿到数据后取消加载：
   uni.hideLoading();

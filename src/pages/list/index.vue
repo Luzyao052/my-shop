@@ -33,13 +33,18 @@ export default {
       list: [], // 商品列表
       pagenum: 1, // 页码
       query: "", // 路径传过来的参数
-      flag: true // 默认数据加载完成
+      flag: true, // 默认数据加载完成
+      total_num: 0 // 默认一共有一条数据
     };
   },
   methods: {
     // 到底部加载更多
     async getMore() {
-      console.log(2);
+      // 判断是否获取完所有数据
+      if(this.list.length === this.total_num) {
+        return
+      }
+
       if (!this.flag) {
         return;
       }
@@ -47,6 +52,7 @@ export default {
       this.flag = false;
       this.pagenum++; // 第二页
       await this.getList(this.query);
+
       // 再次改变标识
       this.flag = true;
     },
@@ -59,8 +65,10 @@ export default {
         pagesize: 5
       };
       const res = await getGoodsSearch(obj);
+      // console.log(res);
       // console.log(...res.message.goods)
       // this.list = res.message.goods;
+      this.total_num = res.message.total
       this.list.push(...res.message.goods);
     },
     goDetail(id) {

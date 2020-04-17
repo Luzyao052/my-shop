@@ -13,6 +13,7 @@
 </script>
 
 <style lang="less">
+  @import "./wxcomponents/vant/dist/common/index.wxss";
   @import './fonts';
 
   image {
